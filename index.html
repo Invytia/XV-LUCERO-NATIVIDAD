@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis XV Años - Lucero Natividad</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Pinyon+Script&family=Montserrat:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pearl:#F2F7FB; --ice:#CFE3F1; --ice-deep:#8DB5D3; --silver:#B9C2CE;
+  --night:#14233A; --night2:#1F3554; --black:#0A111C;
+  --text:#1E2A3B; --muted:#4D5B6E; --ease:cubic-bezier(.25,1,.5,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;font-family:'Montserrat',sans-serif;background:var(--pearl);color:var(--text);overflow-x:hidden;scroll-behavior:smooth}
+
+/* MÚSICA */
+.music-btn{position:fixed;bottom:28px;right:28px;width:50px;height:50px;border-radius:50%;border:none;outline:none;cursor:pointer;z-index:2000;
+  background:linear-gradient(135deg,#dfe6ee,#9aa8b9);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 25px rgba(20,35,58,.4);opacity:0;visibility:hidden;transform:scale(.8);transition:all .6s var(--ease)}
+body.on .music-btn{opacity:1;visibility:visible;transform:scale(1)}
+.music-btn svg{width:18px;height:18px;fill:var(--night)}
+body.on .music-btn.playing{animation:ring 2s infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(141,181,211,.7)}100%{box-shadow:0 0 0 18px rgba(141,181,211,0)}}
+
+/* SOBRE */
+#env{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  background:url('assets/fondo.jpg') center/cover no-repeat,radial-gradient(circle at 50% 30%,#2C4B75,#0E1A2D 75%);
+  transition:opacity 1.2s,visibility 1.2s;overflow:hidden}
+#env.out{opacity:0;visibility:hidden;pointer-events:none}
+#env::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(10,17,28,.25),rgba(10,17,28,.45))}
+.env-txt{position:relative;z-index:10;text-align:center;margin-bottom:46px;animation:float 4s ease-in-out infinite}
+.env-tag{font-family:'Cinzel',serif;font-size:14px;letter-spacing:8px;text-transform:uppercase;color:#fff}
+.env-title{font-family:'Pinyon Script',cursive;font-size:82px;font-weight:400;line-height:1.2;color:#fff;text-shadow:0 0 25px rgba(207,227,241,.6)}
+.env-wrap{position:relative;z-index:10;cursor:pointer;transition:transform .6s var(--ease);width:320px;height:210px}
+.env-wrap:hover{transform:translateY(-8px)}
+.env-body{position:absolute;inset:0;background:#fff;border-radius:2px;box-shadow:0 15px 40px rgba(0,0,0,.35)}
+.env-l,.env-r{position:absolute;top:0;bottom:0;width:50%;z-index:2}
+.env-l{left:0;background:#E8EEF5;clip-path:polygon(0 0,100% 50%,0 100%)}
+.env-r{right:0;background:#F4F8FC;clip-path:polygon(100% 0,0 50%,100% 100%)}
+.env-bot{position:absolute;left:0;right:0;bottom:0;height:55%;background:#DDE6EF;clip-path:polygon(0 100%,50% 0,100% 100%);z-index:3}
+.flap{position:absolute;left:0;top:0;width:100%;height:55%;background:#C9D6E4;clip-path:polygon(0 0,100% 0,50% 100%);
+  transform-origin:top;transition:transform .9s var(--ease);z-index:4}
+.env-wrap.open .flap{transform:rotateX(180deg);z-index:1}
+/* Sello centrado exactamente en la punta de la solapa */
+.seal{position:absolute;left:50%;top:55%;width:46px;height:46px;margin:0;transform:translate(-50%,-50%);z-index:5;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#dfe8f2,#8FA3BA 60%,#5F7590);
+  box-shadow:inset 0 2px 4px rgba(255,255,255,.6),0 4px 15px rgba(0,0,0,.4);transition:opacity .5s,transform .5s}
+.env-wrap.open .seal{opacity:0;transform:translate(-50%,-50%) scale(.4);pointer-events:none}
+.hint{position:relative;z-index:10;margin-top:40px;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--night);
+  background:rgba(255,255,255,.8);padding:6px 16px;border-radius:20px;animation:pulse 2.5s infinite}
+@keyframes pulse{50%{opacity:1}0%,100%{opacity:.5}}
+@keyframes float{50%{transform:translateY(-6px)}}
+
+/* ANIMACIONES DE ENTRADA */
+.rv{opacity:0;transition:opacity 1.2s var(--ease),transform 1.2s var(--ease),filter 1.2s var(--ease);transition-delay:var(--d,0s);position:relative;z-index:2}
+.rv.up{transform:translateY(50px)} .rv.zoom{transform:scale(.88)} .rv.l{transform:translateX(-60px)} .rv.r{transform:translateX(60px)}
+.rv.blur{filter:blur(14px);transform:scale(1.05)} .rv.spin{transform:rotate(-8deg) scale(.85)}
+.rv.in{opacity:1;transform:none;filter:none}
+
+/* ESTRUCTURA */
+#main{display:none;width:100%;flex-direction:column;align-items:center}
+body.on #main{display:flex;animation:fin 2s forwards}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+section{width:100%;padding:110px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden}
+.pearl{background:linear-gradient(180deg,#F7FAFD,var(--pearl))}
+.night{background:linear-gradient(160deg,var(--night),var(--night2));color:#fff}
+.black{background:var(--black);color:#fff}
+.night::before,.night::after,.black::before,.black::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:1}
+.night::before,.black::before{background-image:radial-gradient(1.5px 1.5px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 60px 80px,rgba(255,255,255,.7),transparent),radial-gradient(2px 2px at 120px 40px,#fff,transparent),radial-gradient(1px 1px at 180px 150px,rgba(255,255,255,.6),transparent),radial-gradient(1.5px 1.5px at 260px 90px,#fff,transparent),radial-gradient(1px 1px at 320px 170px,rgba(255,255,255,.8),transparent);background-size:350px 350px;animation:stars 4s infinite alternate ease-in-out;opacity:.6}
+.night::after,.black::after{background-image:radial-gradient(1px 1px at 40px 160px,rgba(255,255,255,.7),transparent),radial-gradient(2px 2px at 140px 240px,#fff,transparent),radial-gradient(1.5px 1.5px at 240px 50px,#fff,transparent),radial-gradient(1px 1px at 290px 200px,rgba(255,255,255,.5),transparent);background-size:400px 400px;animation:stars 6s infinite alternate-reverse ease-in-out;opacity:.5}
+@keyframes stars{0%{opacity:.2;transform:scale(1)}100%{opacity:.9;transform:scale(1.05)}}
+
+/* TIPOGRAFÍA */
+.tag{font-family:'Cinzel',serif;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:var(--night2);margin-bottom:22px;font-weight:600}
+.script{font-family:'Pinyon Script',cursive;font-size:86px;line-height:1.1;font-weight:400;margin-bottom:20px;
+  background:linear-gradient(100deg,#5E7A99 20%,#fff 45%,#9DB7D0 55%,#5E7A99 80%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 5s linear infinite}
+@keyframes shine{to{background-position:-250% 0}}
+.serif{font-family:'Cormorant Garamond',serif;font-size:23px;line-height:1.6;color:var(--muted);font-style:italic;max-width:600px;padding:0 15px}
+.ititle{font-family:'Cinzel',serif;font-size:14px;letter-spacing:3px;line-height:1.5;text-transform:uppercase;color:var(--night2);margin-bottom:12px;font-weight:600}
+.idata{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:500;line-height:1.3;margin-bottom:5px}
+.names{font-family:'Pinyon Script',cursive;font-size:44px;line-height:1.3;margin-bottom:6px}
+.amp{font-family:'Cinzel',serif;font-size:20px;color:var(--ice-deep);margin:12px 0}
+.night .ititle,.black .ititle{color:var(--ice)} .night .serif,.black .serif{color:#CBD8E6}
+.night .tag,.black .tag{color:var(--ice)}
+.icon{width:34px;height:34px;margin-bottom:18px;stroke:var(--ice-deep);fill:none;stroke-width:1.4;position:relative;z-index:2}
+.night .icon,.black .icon{stroke:#fff}
+
+/* FOTOS */
+.photo{width:100%;max-width:380px;border-radius:6px;box-shadow:0 15px 40px rgba(20,35,58,.25);margin:35px auto;display:block;object-fit:cover;position:relative;z-index:2;border:6px solid #fff}
+.hero-photo{max-width:560px;aspect-ratio:3/4;margin-top:10px}
+
+/* BOTONES */
+.btn{display:inline-block;background:linear-gradient(135deg,#1F3554,#14233A);color:#fff;padding:17px 35px;font-size:12px;font-weight:500;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border:none;border-radius:2px;cursor:pointer;margin-top:28px;position:relative;z-index:5;overflow:hidden;transition:all .4s}
+.btn::after{content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);animation:sweep 3.5s infinite}
+@keyframes sweep{to{left:160%}}
+.btn:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(20,35,58,.3)}
+.night .btn,.black .btn{background:linear-gradient(135deg,#fff,#CFE3F1);color:var(--night)}
+.btn.alt{background:transparent;border:1px solid currentColor;color:var(--night);margin-top:14px}
+.btn.alt::after{display:none}
+
+/* CALENDARIO Y CUENTA ATRÁS */
+.cal{width:100%;max-width:340px;margin:36px auto;padding:34px 24px;background:#fff;border-radius:2px;box-shadow:0 15px 45px rgba(0,0,0,.3);position:relative;z-index:2;color:var(--text)}
+.cal-m{font-family:'Cinzel',serif;font-size:20px;color:var(--night2);letter-spacing:4px;text-transform:uppercase;margin-bottom:26px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.ch{font-size:12px;font-weight:500;color:var(--ice-deep);padding-bottom:10px}
+.cd{font-family:'Cormorant Garamond',serif;font-size:20px;display:flex;justify-content:center;align-items:center;aspect-ratio:1}
+.cd.act{background:linear-gradient(135deg,#9DB7D0,#1F3554);color:#fff;border-radius:50%;font-weight:600;animation:beat 2s infinite}
+@keyframes beat{50%{transform:scale(1.15);box-shadow:0 0 18px rgba(141,181,211,.9)}}
+.count{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;max-width:420px;margin:10px auto 20px;position:relative;z-index:2}
+.ci{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.3);border-radius:2px;padding:14px 10px;min-width:68px;display:flex;flex-direction:column;align-items:center;backdrop-filter:blur(2px)}
+.cn{font-family:'Cinzel',serif;font-size:30px;font-weight:600;line-height:1}
+.cl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ice);margin-top:8px}
+
+/* MAPAS */
+.map{width:100%;max-width:550px;height:300px;margin:26px auto 6px;border-radius:2px;overflow:hidden;box-shadow:0 15px 40px rgba(20,35,58,.18);position:relative;z-index:2}
+.map iframe{width:100%;height:100%;border:none}
+.addr{font-size:14px;color:var(--muted);margin:10px 0;position:relative;z-index:2}
+.btnrow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;position:relative;z-index:5}
+.loc{width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center}
+.sep{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--ice-deep),transparent);margin:70px auto}
+
+/* FORMULARIOS */
+.fg{width:100%;max-width:400px;margin:0 auto 18px;position:relative;z-index:2}
+.in-l{width:100%;padding:18px 0;background:transparent;border:none;border-bottom:1px solid rgba(20,35,58,.2);color:var(--text);font-family:inherit;font-size:15px;outline:none;text-align:center;transition:border-color .4s}
+.in-l:focus{border-bottom-color:var(--night2)} textarea.in-l{resize:vertical;min-height:90px} select.in-l{appearance:none;text-align-last:center;cursor:pointer}
+.ticket{width:100%;max-width:380px;margin:30px auto;background:#fff;padding:46px 25px;border-radius:2px;box-shadow:0 15px 40px rgba(20,35,58,.12);position:relative;z-index:2}
+
+/* DESTELLOS */
+.spk{position:relative;display:inline-block}
+.sp{position:absolute;width:18px;height:18px;pointer-events:none;z-index:10;animation:tw 2s infinite ease-in-out;
+  background:url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C12 5.5 16.5 10 22 10C16.5 10 12 14.5 12 20C12 14.5 7.5 10 2 10C7.5 10 12 5.5 12 0Z" fill="%238DB5D3"/></svg>') center/contain no-repeat}
+@keyframes tw{0%,100%{opacity:0;transform:scale(.3) rotate(0)}50%{opacity:.95;transform:scale(1.2) rotate(90deg)}}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:1500;overflow:hidden}
+.fs{position:absolute;bottom:-30px;opacity:0;animation:up linear infinite;
+  background:url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C12 5.5 16.5 10 22 10C16.5 10 12 14.5 12 20C12 14.5 7.5 10 2 10C7.5 10 12 5.5 12 0Z" fill="%2399B8D3"/></svg>') center/contain no-repeat}
+@keyframes up{0%{opacity:0;transform:translate(0,0) scale(.4) rotate(0)}10%{opacity:.9}50%{transform:translate(22px,-50vh) scale(1) rotate(180deg)}90%{opacity:.6}100%{opacity:0;transform:translate(-15px,-105vh) scale(.5) rotate(360deg)}}
+.burst{position:absolute;width:14px;height:14px;opacity:0;animation:bst 1.4s ease-out forwards;
+  background:url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C12 5.5 16.5 10 22 10C16.5 10 12 14.5 12 20C12 14.5 7.5 10 2 10C7.5 10 12 5.5 12 0Z" fill="%23ffffff"/></svg>') center/contain no-repeat}
+@keyframes bst{0%{opacity:1;transform:translate(0,0) scale(.3)}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.6) rotate(240deg)}}
+
+
+/* HERO CON FOTO DE FONDO */
+.hero{min-height:100vh;min-height:100svh;justify-content:flex-end;padding:0 20px 90px;color:#fff;background:var(--night)}
+.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;z-index:0;animation:kb 20s ease-in-out infinite alternate}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.12)}}
+.hero-ov{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(10,17,28,.25) 0%,rgba(10,17,28,0) 30%,rgba(10,17,28,.55) 65%,rgba(10,17,28,.9) 100%)}
+.hero .icon{stroke:#fff}.hero .tag{color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.hero .script{background:linear-gradient(100deg,#fff 20%,#CFE3F1 45%,#fff 55%,#B9C2CE 80%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 14px rgba(0,0,0,.55))}
+.hero .serif{color:#EAF2F9;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.scroll-hint{width:1px;height:50px;margin-top:30px;background:linear-gradient(#fff,transparent);animation:pulse 2s infinite}
+
+footer{width:100%;padding:40px 20px 80px;text-align:center;background:var(--black);color:var(--ice);font-size:10px;letter-spacing:4px;text-transform:uppercase;opacity:.9}
+
+@media(max-width:400px){.env-title{font-size:62px}.script{font-size:64px}section{padding:80px 15px}.names{font-size:36px}.env-wrap{width:290px;height:190px}.ci{min-width:58px;padding:10px 8px}.cn{font-size:24px}.map{height:260px}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+
+<audio id="bg" src="assets/song.mp3" loop></audio>
+<div id="fx"></div>
+
+<button id="mbtn" class="music-btn" onclick="toggleMusic()" aria-label="Controlar música">
+  <svg id="ip" style="display:none" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+  <svg id="ipa" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+</button>
+
+<!-- SOBRE -->
+<div id="env">
+  <div class="env-txt"><div class="env-tag">Mis XV Años</div><h1 class="env-title">Lucero Natividad</h1></div>
+  <div class="env-wrap" id="ew" onclick="openEnv()">
+    <div class="env-body"></div><div class="env-l"></div><div class="env-r"></div><div class="env-bot"></div>
+    <div class="flap"></div>
+    <div class="seal"></div>
+  </div>
+  <div class="hint">Tocar para abrir</div>
+</div>
+
+<main id="main">
+
+<!-- PORTADA -->
+<section class="hero">
+  <img src="assets/1.jpg" class="hero-bg" alt="Lucero Natividad">
+  <div class="hero-ov"></div>
+  <svg class="icon rv zoom" viewBox="0 0 24 24"><path d="M12 2l2.4 6.9L21 9l-5.5 4.3L17 21l-5-3.9L7 21l1.5-7.7L3 9l6.6-.1z" stroke-linejoin="round"/></svg>
+  <div class="tag rv up spk" style="--d:.2s">Mis XV Años</div>
+  <h1 class="script rv zoom spk" style="--d:.4s">Lucero Natividad</h1>
+  <p class="serif rv up" style="--d:.6s">"El regalo más grande es que compartas conmigo esta celebración."</p>
+  <div class="scroll-hint rv up" style="--d:.9s"></div>
+</section>
+
+<!-- FECHA -->
+<section class="night">
+  <svg class="icon rv zoom" viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 6h14a1 1 0 011 1v12a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1z" stroke-linejoin="round" stroke-linecap="round"/></svg>
+  <div class="ititle rv up spk">Será un honor contar con tu presencia el</div>
+  <div class="idata rv zoom" style="font-size:42px;--d:.15s">21 de Diciembre</div>
+  <div class="idata rv up" style="font-size:24px;color:var(--ice);letter-spacing:2px;--d:.25s">2026</div>
+
+  <div class="cal rv spin" style="--d:.3s">
+    <div class="cal-m">Diciembre</div>
+    <div class="grid">
+      <div class="ch">D</div><div class="ch">L</div><div class="ch">M</div><div class="ch">M</div><div class="ch">J</div><div class="ch">V</div><div class="ch">S</div>
+      <div></div><div></div>
+      <div class="cd">1</div><div class="cd">2</div><div class="cd">3</div><div class="cd">4</div><div class="cd">5</div>
+      <div class="cd">6</div><div class="cd">7</div><div class="cd">8</div><div class="cd">9</div><div class="cd">10</div><div class="cd">11</div><div class="cd">12</div>
+      <div class="cd">13</div><div class="cd">14</div><div class="cd">15</div><div class="cd">16</div><div class="cd">17</div><div class="cd">18</div><div class="cd">19</div>
+      <div class="cd">20</div><div class="cd act">21</div><div class="cd">22</div><div class="cd">23</div><div class="cd">24</div><div class="cd">25</div><div class="cd">26</div>
+      <div class="cd">27</div><div class="cd">28</div><div class="cd">29</div><div class="cd">30</div><div class="cd">31</div>
+    </div>
+  </div>
+
+  <div class="ititle rv up spk" style="margin-top:10px">Cuenta Atrás</div>
+  <div class="count rv zoom">
+    <div class="ci"><div class="cn" id="cd-d">00</div><div class="cl">Días</div></div>
+    <div class="ci"><div class="cn" id="cd-h">00</div><div class="cl">Hrs</div></div>
+    <div class="ci"><div class="cn" id="cd-m">00</div><div class="cl">Min</div></div>
+    <div class="ci"><div class="cn" id="cd-s">00</div><div class="cl">Seg</div></div>
+  </div>
+  <a class="btn rv up" target="_blank" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=XV+A%C3%B1os+de+Lucero+Natividad&dates=20261221T184500Z/20261222T070000Z&details=Celebremos+juntos+este+d%C3%ADa+tan+especial&location=Salones+Kristal,+San+Juan+Ixtayopan,+CDMX">Agendar Evento</a>
+</section>
+
+<!-- FAMILIA -->
+<section class="pearl">
+  <svg class="icon rv zoom" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.2C0.3 8.4 2 4.8 5.4 4.2 7.6 3.8 9.8 5 12 7.8 14.2 5 16.4 3.8 18.6 4.2 22 4.8 23.7 8.4 22 11.8 19.5 16.4 12 21 12 21z" stroke-linejoin="round"/></svg>
+  <div class="ititle rv up spk">Con el amor de mis padres</div>
+  <div class="names rv l" style="--d:.1s">Raul Cruz Aranda</div>
+  <div class="amp rv zoom" style="--d:.2s">&</div>
+  <div class="names rv r" style="--d:.2s">Rosalva Jurado</div>
+  <img src="assets/2.jpg" class="photo rv blur" alt="Mi familia">
+
+  <div class="sep rv zoom"></div>
+  <div class="ititle rv up spk">Y mis Padrinos</div>
+  <div class="names rv l" style="font-size:38px">Mario Olivos Cruz</div>
+  <div class="amp rv zoom">&</div>
+  <div class="names rv r" style="font-size:38px">Sonia Jimenez Estrada</div>
+</section>
+
+<!-- ITINERARIO -->
+<section class="night">
+  <svg class="icon rv zoom" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="ititle rv up spk">Itinerario</div>
+  <div class="idata rv zoom" style="margin-top:20px">12:45 p.m.</div>
+  <div class="serif rv up" style="font-size:26px;--d:.1s">Ceremonia Religiosa</div>
+  <p class="serif rv up" style="font-size:18px;--d:.15s">Santuario Asunción de María</p>
+  <div class="sep rv zoom" style="margin:40px auto"></div>
+  <div class="idata rv zoom">4:00 p.m.</div>
+  <div class="serif rv up" style="font-size:26px;--d:.1s">Recepción</div>
+  <p class="serif rv up" style="font-size:18px;--d:.15s">Salones Kristal</p>
+</section>
+
+<!-- UBICACIONES -->
+<section class="pearl">
+  <svg class="icon rv zoom" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.9-6.5-11A6.5 6.5 0 0112 3.5 6.5 6.5 0 0118.5 10c0 5.1-6.5 11-6.5 11z" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.3"/></svg>
+
+  <div class="loc">
+    <div class="ititle rv up spk">Ceremonia Religiosa · 12:45 p.m.</div>
+    <div class="idata rv zoom">Santuario Asunción de María</div>
+    <div class="addr rv up">Avenida México Norte, Villa Milpa Alta, CDMX</div>
+    <div class="map rv zoom"><iframe loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Santuario+Asunci%C3%B3n+de+Mar%C3%ADa,+Avenida+M%C3%A9xico+Norte,+Villa+Milpa+Alta,+CDMX&z=16&output=embed"></iframe></div>
+    <div class="btnrow rv up">
+      <a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Santuario+Asunci%C3%B3n+de+Mar%C3%ADa+Avenida+M%C3%A9xico+Norte+Villa+Milpa+Alta+CDMX">Google Maps</a>
+      <a class="btn alt" target="_blank" href="https://waze.com/ul/h9g3t4tvc9">Waze</a>
+    </div>
+  </div>
+
+  <div class="sep rv zoom"></div>
+
+  <div class="loc">
+    <div class="ititle rv up spk">Recepción · 4:00 p.m.</div>
+    <div class="idata rv zoom">Salones Kristal</div>
+    <div class="addr rv up">58 Educación Primaria, San Juan Ixtayopan, CDMX</div>
+    <div class="map rv zoom"><iframe loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Salones+Kristal,+58+Educaci%C3%B3n+Primaria,+San+Juan+Ixtayopan,+CDMX&z=16&output=embed"></iframe></div>
+    <div class="btnrow rv up">
+      <a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Salones+Kristal+58+Educaci%C3%B3n+Primaria+San+Juan+Ixtayopan+CDMX">Google Maps</a>
+      <a class="btn alt" target="_blank" href="https://waze.com/ul/h9g3t7m8cd">Waze</a>
+    </div>
+  </div>
+</section>
+
+<!-- DRESS CODE -->
+<section class="black">
+  <svg class="icon rv zoom" viewBox="0 0 24 24"><path d="M9 3l3 2 3-2 4 3-2 3-2-1v11H8V8L6 9 4 6z" stroke-linejoin="round" stroke-linecap="round"/></svg>
+  <div class="ititle rv up spk">Dress Code</div>
+  <div class="idata rv blur" style="font-family:'Cinzel',serif;font-size:40px;letter-spacing:5px;margin:25px 0">FORMAL</div>
+  <p class="serif rv up" style="font-size:21px">Se solicita amablemente asistir de vestimenta formal.</p>
+  <p class="serif rv up" style="font-size:16px;margin-top:15px;font-family:'Montserrat',sans-serif;font-style:normal;color:#9FB0C4">(Favor de reservar el color plata para la quinceañera)</p>
+</section>
+
+<!-- MESA DE REGALOS -->
+<section class="pearl">
+  <svg class="icon rv zoom" viewBox="0 0 24 24"><path d="M20 12v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9M12 22V7M12 7H7.5a2.5 2.5 0 010-5C9.6 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C14.4 2 12 7 12 7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="ititle rv up spk">Mesa de Regalos</div>
+  <div class="idata rv zoom" style="font-size:34px">Lluvia de sobres o regalos sorpresa</div>
+  <p class="serif rv up" style="margin-top:20px;font-size:21px">El regalo más grande es que compartas conmigo esta celebración. Si deseas tener un detalle, habrá lluvia de sobres o bien puedes sorprenderme con un obsequio especial. Lo importante es tu presencia.</p>
+</section>
+
+<!-- PLAYLIST -->
+<section class="night">
+  <svg class="icon rv zoom" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
+  <div class="ititle rv up spk">Música</div>
+  <div class="idata rv zoom" style="font-size:34px">Nuestra Playlist</div>
+  <p class="serif rv up" style="margin:20px auto 36px;font-size:20px">Ayúdame a crear el ambiente perfecto agregando tus canciones favoritas para la pista de baile.</p>
+  <div class="rv zoom" style="width:100%;max-width:480px;position:relative;z-index:2">
+    <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5TZMK6BmZsuzPNk2Dyedp6?utm_source=generator&si=4ea7f607dac448f7" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  </div>
+  <a class="btn rv up" target="_blank" href="https://open.spotify.com/playlist/5TZMK6BmZsuzPNk2Dyedp6?si=6d021e142e454cb8&pt=5ee0a1e6f46e4f45c69e1c01f98d5c39">Agregar Canciones</a>
+</section>
+
+<!-- GALERÍA EN VIVO -->
+<section class="black">
+  <svg class="icon rv zoom" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="1.5"/><path d="M8 6l1.5-2.5h5L16 6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5"/></svg>
+  <div class="ititle rv up spk">Momentos</div>
+  <div class="idata rv zoom" style="font-size:34px">Galería en Vivo</div>
+  <p class="serif rv up" style="margin:25px auto;font-size:20px">Captura la magia de esta noche. Comparte todas las fotos y videos que tomes directamente en nuestro álbum digital.<br><br>
+    <span style="font-size:14px;font-family:'Montserrat',sans-serif;font-style:normal;color:var(--ice)">Te sugerimos tener instalada la app de <strong>Google Drive</strong> para subir tus archivos fácilmente.</span></p>
+  <a class="btn rv up" target="_blank" href="https://drive.google.com/drive/folders/1cKB2_JGislFK2_pBBgvcC4TTKX9VAJwI?usp=sharing">Subir mis Fotos</a>
+</section>
+
+<!-- RSVP -->
+<section class="pearl" style="padding-top:60px">
+  <div id="pases" style="display:none;width:100%;margin-bottom:50px">
+    <div class="ititle rv up spk">Acceso al Evento</div>
+    <div class="ticket rv zoom">
+      <div class="tag">Boleto Especial</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--night2);font-style:italic;margin-bottom:15px">Invitado Especial</div>
+      <div class="serif" style="font-size:19px;margin:0 auto 15px">Pases Asignados</div>
+      <div id="tk" style="font-family:'Cinzel',serif;font-size:60px;line-height:1">0</div>
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:30px">Muestra esta pantalla al llegar</div>
+    </div>
+  </div>
+
+  <svg class="icon rv zoom" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 6l9 7 9-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="ititle rv up spk">RSVP</div>
+  <div class="idata rv zoom" style="font-size:34px">Confirmar Asistencia</div>
+  <p class="serif rv up" style="margin:15px auto 36px;font-size:20px">Agradeceremos tu confirmación lo antes posible.</p>
+  <div class="fg rv up"><input type="text" id="rn" class="in-l" placeholder="Tu nombre y apellido"></div>
+  <div class="fg rv up"><select id="rs" class="in-l"><option value="" disabled selected>¿Nos acompañarás?</option><option value="yes">Con gusto asistiré</option><option value="no">No me será posible asistir</option></select></div>
+  <div class="fg"><select id="rg" class="in-l" style="display:none"></select></div>
+  <button class="btn rv up" onclick="sendRSVP()" style="margin-bottom:70px">Confirmar por WhatsApp</button>
+
+  <svg class="icon rv zoom" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.2C0.3 8.4 2 4.8 5.4 4.2 7.6 3.8 9.8 5 12 7.8 14.2 5 16.4 3.8 18.6 4.2 22 4.8 23.7 8.4 22 11.8 19.5 16.4 12 21 12 21z" stroke-linejoin="round"/></svg>
+  <div class="ititle rv up spk">Mensajes</div>
+  <div class="idata rv zoom" style="font-size:34px">Muro de los Deseos</div>
+  <div class="fg rv up" style="margin-top:30px"><input type="text" id="wn" class="in-l" placeholder="De parte de..."></div>
+  <div class="fg rv up"><textarea id="wm" class="in-l" placeholder="Deja un lindo mensaje para Lucero Natividad..."></textarea></div>
+  <button class="btn rv up" onclick="sendWish()" style="margin-bottom:60px">Enviar Mensaje</button>
+
+  <img src="assets/3.jpg" class="photo rv zoom" style="max-width:420px;margin-top:0" alt="Lucero">
+  <div class="script rv blur" style="font-size:56px;margin-top:10px">Con amor, Lucero</div>
+</section>
+</main>
+
+<footer>Invytia Premium Concierge</footer>
+
+<script>
+const $=id=>document.getElementById(id), bg=$('bg');
+let playing=false;
+function setIcon(p){playing=p;$('ip').style.display=p?'none':'block';$('ipa').style.display=p?'block':'none';$('mbtn').classList.toggle('playing',p)}
+function toggleMusic(){ if(playing){bg.pause();setIcon(false)}else{bg.play().then(()=>setIcon(true)).catch(()=>{})} }
+
+/* Apertura del sobre + explosión de destellos */
+function openEnv(){
+  const w=$('ew'); if(w.classList.contains('open'))return; w.classList.add('open');
+  const r=w.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2, fx=$('fx');
+  for(let i=0;i<46;i++){const b=document.createElement('div');b.className='burst';const a=Math.random()*6.283,d=80+Math.random()*220;
+    b.style.left=cx+'px';b.style.top=cy+'px';b.style.setProperty('--x',Math.cos(a)*d+'px');b.style.setProperty('--y',Math.sin(a)*d+'px');
+    b.style.animationDelay=Math.random()*.3+'s';fx.appendChild(b);setTimeout(()=>b.remove(),2000)}
+  setTimeout(()=>{$('env').classList.add('out');document.body.classList.add('on');
+    bg.play().then(()=>setIcon(true)).catch(()=>setIcon(false));watch()},1100);
+}
+
+/* Revelado al hacer scroll */
+function watch(){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+}
+
+/* Destellos en títulos */
+document.querySelectorAll('.spk').forEach(el=>{
+  [['-10px','-18px','auto','auto','0s'],['auto','auto','-6px','-16px','1s']].forEach(p=>{
+    const s=document.createElement('span');s.className='sp';
+    s.style.cssText=`top:${p[0]};right:${p[1]};bottom:${p[2]};left:${p[3]};animation-delay:${p[4]}`;el.appendChild(s)})
+});
+
+/* Destellos flotantes globales */
+(()=>{const c=$('fx');for(let i=0;i<24;i++){const s=document.createElement('div');s.className='fs';const z=6+Math.random()*12,d=9+Math.random()*10;
+  s.style.cssText=`left:${Math.random()*100}vw;width:${z}px;height:${z}px;animation-duration:${d}s;animation-delay:${Math.random()*d}s`;c.appendChild(s)}})();
+
+/* Cuenta atrás: 21 dic 2026, 12:45 h (CDMX, UTC-6) */
+(()=>{const t=new Date("2026-12-21T12:45:00-06:00").getTime(),p=n=>String(n).padStart(2,'0');
+  function u(){const d=Math.max(0,t-Date.now());
+    $('cd-d').textContent=p(Math.floor(d/864e5));$('cd-h').textContent=p(Math.floor(d%864e5/36e5));
+    $('cd-m').textContent=p(Math.floor(d%36e5/6e4));$('cd-s').textContent=p(Math.floor(d%6e4/1e3))}
+  u();setInterval(u,1000)})();
+
+/* Pases por URL: ?p=4 */
+const q=new URLSearchParams(location.search);
+let pases=parseInt(q.get('p'))||parseInt(q.get('pases'))||0;
+if(pases>0){$('pases').style.display='block';$('tk').innerText=pases}else pases=10;
+const WA="525621414123";
+$('rs').addEventListener('change',e=>{const g=$('rg');
+  if(e.target.value==='yes'){g.style.display='block';let h='<option value="" disabled selected>¿Cuántas personas asisten?</option>';
+    for(let i=1;i<=pases;i++)h+=`<option value="${i}">${i} persona${i>1?'s':''}</option>`;g.innerHTML=h}
+  else{g.style.display='none';g.value=''}});
+function sendRSVP(){
+  const n=$('rn').value.trim(),s=$('rs').value,g=$('rg').value;
+  if(!n||!s){alert("Por favor, ingresa tu nombre y selecciona una opción.");return}
+  if(s==='yes'&&!g){alert("Por favor, indica cuántas personas asistirán.");return}
+  const m=s==='yes'?`¡Hola! Soy ${n}. Sí, confirmo con gusto mi asistencia a los XV años de Lucero Natividad. Seremos ${g} persona(s) en total.`
+    :`¡Hola! Soy ${n}. Lamentablemente no me será posible asistir a los XV años de Lucero Natividad. Agradezco mucho la invitación.`;
+  window.open(`https://wa.me/${WA}?text=${encodeURIComponent(m)}`,'_blank');
+}
+function sendWish(){
+  const n=$('wn').value.trim(),w=$('wm').value.trim();
+  if(!n||!w){alert("Por favor, ingresa tu nombre y tu mensaje.");return}
+  window.open(`https://wa.me/${WA}?text=${encodeURIComponent(`Hola Lucero Natividad, soy ${n}. Te envío este mensaje con mucho cariño:\n\n"${w}"`)}`,'_blank');
+}
+</script>
+</body>
+</html>
