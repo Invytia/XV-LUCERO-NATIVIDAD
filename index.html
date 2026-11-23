@@ -95,6 +95,7 @@ section{width:100%;padding:110px 20px;display:flex;flex-direction:column;align-i
 .btn::after{content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);animation:sweep 3.5s infinite}
 @keyframes sweep{to{left:160%}}
 .btn:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(20,35,58,.3)}
+.btn:disabled{opacity:.6;cursor:wait}
 .night .btn,.black .btn{background:linear-gradient(135deg,#fff,#CFE3F1);color:var(--night)}
 .btn.alt{background:transparent;border:1px solid currentColor;color:var(--night);margin-top:14px}
 .btn.alt::after{display:none}
@@ -125,6 +126,7 @@ section{width:100%;padding:110px 20px;display:flex;flex-direction:column;align-i
 .in-l{width:100%;padding:18px 0;background:transparent;border:none;border-bottom:1px solid rgba(20,35,58,.2);color:var(--text);font-family:inherit;font-size:15px;outline:none;text-align:center;transition:border-color .4s}
 .in-l:focus{border-bottom-color:var(--night2)} textarea.in-l{resize:vertical;min-height:90px} select.in-l{appearance:none;text-align-last:center;cursor:pointer}
 .ticket{width:100%;max-width:380px;margin:30px auto;background:#fff;padding:46px 25px;border-radius:2px;box-shadow:0 15px 40px rgba(20,35,58,.12);position:relative;z-index:2}
+.ok-msg{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;color:var(--night2);margin-top:14px;min-height:24px;position:relative;z-index:2}
 
 /* DESTELLOS */
 .spk{position:relative;display:inline-block}
@@ -325,14 +327,16 @@ footer{width:100%;padding:40px 20px 80px;text-align:center;background:var(--blac
   <div class="fg rv up"><input type="text" id="rn" class="in-l" placeholder="Tu nombre y apellido"></div>
   <div class="fg rv up"><select id="rs" class="in-l"><option value="" disabled selected>¿Nos acompañarás?</option><option value="yes">Con gusto asistiré</option><option value="no">No me será posible asistir</option></select></div>
   <div class="fg"><select id="rg" class="in-l" style="display:none"></select></div>
-  <button class="btn rv up" onclick="sendRSVP()" style="margin-bottom:70px">Confirmar por WhatsApp</button>
+  <button class="btn rv up" id="btnRsvp" onclick="sendRSVP()" style="margin-bottom:10px">Confirmar Asistencia</button>
+  <div class="ok-msg" id="okRsvp" style="margin-bottom:60px"></div>
 
   <svg class="icon rv zoom" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.2C0.3 8.4 2 4.8 5.4 4.2 7.6 3.8 9.8 5 12 7.8 14.2 5 16.4 3.8 18.6 4.2 22 4.8 23.7 8.4 22 11.8 19.5 16.4 12 21 12 21z" stroke-linejoin="round"/></svg>
   <div class="ititle rv up spk">Mensajes</div>
   <div class="idata rv zoom" style="font-size:34px">Muro de los Deseos</div>
   <div class="fg rv up" style="margin-top:30px"><input type="text" id="wn" class="in-l" placeholder="De parte de..."></div>
   <div class="fg rv up"><textarea id="wm" class="in-l" placeholder="Deja un lindo mensaje para Lucero Natividad..."></textarea></div>
-  <button class="btn rv up" onclick="sendWish()" style="margin-bottom:60px">Enviar Mensaje</button>
+  <button class="btn rv up" id="btnWish" onclick="sendWish()" style="margin-bottom:10px">Enviar Mensaje</button>
+  <div class="ok-msg" id="okWish" style="margin-bottom:50px"></div>
 
   <img src="assets/3.jpg" class="photo rv zoom" style="max-width:420px;margin-top:0" alt="Lucero">
   <div class="script rv blur" style="font-size:56px;margin-top:10px">Con amor, Lucero</div>
@@ -342,10 +346,28 @@ footer{width:100%;padding:40px 20px 80px;text-align:center;background:var(--blac
 <footer>Invytia Premium Concierge</footer>
 
 <script>
+/* ========= CONFIGURACIÓN =========
+   Pega aquí la URL de tu Apps Script (Implementar > Aplicación web) */
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbyWZeHroghw95uqO0sf-r-yfK58BriobM1RTSHIxm7dwt_38KYAJJXfJD3neEM-J-B1/exec";
+const WA = "525621414123";
+
 const $=id=>document.getElementById(id), bg=$('bg');
 let playing=false;
 function setIcon(p){playing=p;$('ip').style.display=p?'none':'block';$('ipa').style.display=p?'block':'none';$('mbtn').classList.toggle('playing',p)}
 function toggleMusic(){ if(playing){bg.pause();setIcon(false)}else{bg.play().then(()=>setIcon(true)).catch(()=>{})} }
+
+/* Envío a Google Sheets (en segundo plano, sin bloquear WhatsApp) */
+function toSheet(data){
+  if(!SHEET_URL||SHEET_URL.indexOf('PEGA_AQUI')===0)return;
+  try{
+    fetch(SHEET_URL,{method:'POST',mode:'no-cors',keepalive:true,
+      headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data)}).catch(()=>{});
+  }catch(_){}
+}
+function thanks(btnId,msgId,text,label){
+  const b=$(btnId),m=$(msgId);b.disabled=true;m.textContent=text;
+  setTimeout(()=>{b.disabled=false;b.textContent=label},4000);
+}
 
 /* Apertura del sobre + explosión de destellos */
 function openEnv(){
@@ -385,23 +407,28 @@ document.querySelectorAll('.spk').forEach(el=>{
 /* Pases por URL: ?p=4 */
 const q=new URLSearchParams(location.search);
 let pases=parseInt(q.get('p'))||parseInt(q.get('pases'))||0;
+const asignados=pases;
 if(pases>0){$('pases').style.display='block';$('tk').innerText=pases}else pases=10;
-const WA="525621414123";
 $('rs').addEventListener('change',e=>{const g=$('rg');
   if(e.target.value==='yes'){g.style.display='block';let h='<option value="" disabled selected>¿Cuántas personas asisten?</option>';
     for(let i=1;i<=pases;i++)h+=`<option value="${i}">${i} persona${i>1?'s':''}</option>`;g.innerHTML=h}
   else{g.style.display='none';g.value=''}});
+
 function sendRSVP(){
   const n=$('rn').value.trim(),s=$('rs').value,g=$('rg').value;
   if(!n||!s){alert("Por favor, ingresa tu nombre y selecciona una opción.");return}
   if(s==='yes'&&!g){alert("Por favor, indica cuántas personas asistirán.");return}
   const m=s==='yes'?`¡Hola! Soy ${n}. Sí, confirmo con gusto mi asistencia a los XV años de Lucero Natividad. Seremos ${g} persona(s) en total.`
     :`¡Hola! Soy ${n}. Lamentablemente no me será posible asistir a los XV años de Lucero Natividad. Agradezco mucho la invitación.`;
+  toSheet({tipo:'rsvp',nombre:n,asistencia:s,personas:s==='yes'?g:0,asignados:asignados});
+  thanks('btnRsvp','okRsvp','¡Gracias! Tu respuesta fue registrada.','Confirmar Asistencia');
   window.open(`https://wa.me/${WA}?text=${encodeURIComponent(m)}`,'_blank');
 }
 function sendWish(){
   const n=$('wn').value.trim(),w=$('wm').value.trim();
   if(!n||!w){alert("Por favor, ingresa tu nombre y tu mensaje.");return}
+  toSheet({tipo:'deseo',nombre:n,mensaje:w});
+  thanks('btnWish','okWish','Gracias por tus buenos deseos ✨','Enviar Mensaje');
   window.open(`https://wa.me/${WA}?text=${encodeURIComponent(`Hola Lucero Natividad, soy ${n}. Te envío este mensaje con mucho cariño:\n\n"${w}"`)}`,'_blank');
 }
 </script>
